@@ -8,6 +8,8 @@ This repository aims to support experiemnts on AI-AI cooperation and is adapted 
 
 2. Start ipython and run test/environment_state_action.py to run visualizations of agents working in their Overcooked environment.
 
+For specifics on existing agent code and how to run the code, please refer to in-file comments. 
+
 **References**
 
 This repository draws on previous work by others. To name a few (which may also provide helpful context/reference for the current repository), please see:
@@ -20,4 +22,4 @@ Github Repo: [overcooked-ai](https://github.com/HumanCompatibleAI/overcooked_ai)
 
 Github Repo: [overcooked-ai](https://github.com/bic4907/Overcooked-AI)
 
-.- 
+

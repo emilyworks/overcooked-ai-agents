@@ -1,0 +1,33 @@
+agent:
+  name: bc
+  _target_: model.bc.BahaviorClone
+  params:
+    obs_dim: ???
+    action_dim: ???
+    action_range: ???
+    agent_index: ???
+    hidden_dim: 64
+    device: ${device}
+    discrete_action_space: ${discrete_action_space}
+    batch_size: 256
+    lr: 0.001
+    tau: 0.01
+    gamma: 0.95
+    critic:
+      input_dim: ???
+data:
+  data_dirs:
+  - ../../../test_em
+env: asymmetric_advantages
+episode_length: 500
+discrete_action_space: true
+experiment: vanilla
+seed: 0
+num_train_steps: 40000
+eval_frequency: 1000
+num_eval_episodes: 3
+common_reward: true
+device: cuda
+log_frequency: 5000
+log_save_tb: true
+save_video: true

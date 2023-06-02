@@ -15,37 +15,55 @@ from agents import Random, MCTS
 
 #initialize the environment and the state
 env = OverCookedEnv(scenario="asymmetric_advantages")
-state = env.reset()
+env.reset()
 
 
 # Random agent gameplay ---------------------------------------
 
-for _ in range(200):
+# for _ in range(200):
 
-    #call the class and its methods
-    agent = Random(env)
-    agent_ac1 = agent.action1()
-    agent_ac2 = agent.action2()
+#     #call the class and its methods
+#     agent = Random(env)
+#     agent_ac1 = agent.action1()
+#     agent_ac2 = agent.action2()
     
-    #feed actions into the environment
-    next_state, reward, done, info = env.step(action=[agent_ac1, agent_ac2])
+#     #feed actions into the environment
+#     next_state, reward, done, info = env.step(action=[agent_ac1, agent_ac2])
     
-    #visualize the environment
-    image = env.render()
-    cv2.imshow('Image', image)
-    key = cv2.waitKey(100)
-
-# MCTS agent gameplay -------------------------------------------
-
-# agent = MCTS(env.reset(), env)
-# agent_action = agent.iterate(5000)
-# agent_path = agent.path()
-
-# for action in agent_path:
-#     next_state, reward, done, info = env.step(action=action)
+#     #visualize the environment
 #     image = env.render()
 #     cv2.imshow('Image', image)
 #     key = cv2.waitKey(100)
+
+# MCTS agent gameplay -------------------------------------------
+
+# next_state, reward, done, info = env.step(action=[1, 1])
+# print(next_state)
+
+# env.reset()
+
+# next_state, reward, done, info = env.step(action=[1, 1])
+# print(next_state)
+
+# env.reset()
+
+# next_state, reward, done, info = env.step(action=[1, 1])
+# print(next_state)
+# print(info)
+
+# env = env.reset()
+
+agent = MCTS()
+agent_action = agent.iterate(1)
+agent_path = agent.path()
+
+print(agent_path)
+
+for action in agent_path:
+    next_state, reward, done, info = env.step(action=action)
+    image = env.render()
+    cv2.imshow('Image', image)
+    key = cv2.waitKey(100)
 
 
 

@@ -59,11 +59,12 @@ of "Artificial Intelligence".
 
 class MCTS():
 
-    def __init__(self, initial, env):
+    def __init__(self):
         
-        self.tree = Tree(Node(initial, None, True, None, 0, 1, 0, False))
-        self.env = env
-        self.initial = initial
+        self.env = OverCookedEnv(scenario="asymmetric_advantages")
+        self.initial = self.env.reset()
+        self.tree = Tree(Node(self.initial, None, [[-1,-1]], [-1,-1], 0, 1, 0))
+
 
     def iterate(self, n):
         '''
@@ -71,187 +72,161 @@ class MCTS():
         '''        
 
         for _ in range(n):
+
             state, reward = self.selection(self.initial)
-            if reward == 0:
+
+            if reward <= 0:
                 expanded = self.expansion(state, False)
-                reward = self.rollout(expanded, False, 0)
-                self.backprop(expanded)
+                print("THIS IS MY EXPANDED STATE")
+                print(expanded)
+                print(self.tree.get(expanded).action_path)
+                reward = self.rollout(expanded)
+                self.backprop(expanded, reward)
+
             else:
                 expanded = self.expansion(state, True)
-                reward = self.rollout(expanded, True, reward)
-                self.backprop(expanded)
+                reward = self.rollout(expanded)
+                self.backprop(expanded, reward)
+
             self.env.reset()
             env.reset()
+
+
     
     def path(self):
         '''
         Determine the chosen path of agent actions based on MCTS algo results
         '''
-        #reset env
-        env.reset()
-        self.env.reset()
-
+        #initializations
         most_visits = 0
-        done = False
-        current = self.tree.get(self.initial)
-
-        #path list
-        action_path = []
-        chosen_action = current.action_from_parent
+        done = 0
+        reward = 0
+        current = self.initial
+        mcts_path = []
+        current_changed = False
         
-
-        children_actions = [0, 1, 2, 3, 4, 5]
-        
-        while not done:
+        while done <= 200 and reward <= 0:
             
-            for child_action1 in children_actions:
-                for child_action2 in children_actions:
+            #traverse through the layers of the tree 
+            children = self.children(current)
+            for child in children:
+                child = self.tree.get(child.state)
+                if child == None:
+                    continue
+                if child.reward > 0:
+                    mcts_path.append(child.action_from_parent)
+                    return mcts_path
+                if child.visits > most_visits:
+                    current_changed = True
+                    most_visits = child.visits
+                    current = child.state
+            mcts_path.append(self.tree.get(current).action_from_parent)
+            done += 1
+            if not current_changed:
+                break
+            else:
+                current_changed = False
 
-                    try:
-                        child_state, child_reward, done = self.env.step(action=[child_action1, child_action2])[:3]
-                    except:
-                        continue
-
-                    else:
-                        # for node in self.tree:
-                        # print(self.tree)
-                        if self.tree.get(child_state) != None:
-
-                            visits = self.tree.get(child_state).visits
-
-                            if visits > most_visits:
-                                most_visits = visits
-                                chosen_child = child_state
-                                chosen_action = [child_action1, child_action2]
-                
-            action_path.append(chosen_action)
-            most_visits = 0
-
-        print(action_path)
-
-        return action_path 
+        return mcts_path 
 
     def selection(self, state, alpha=0.01):
         '''
         selects a node in the tree that has not been expanded yet
         '''
-
-        children_actions = [0,1,2,3,4,5]
+        # traverse the tree by picking best kids by UCT val
+        while self.tree.get(state) != None:
+            
+            #get the children
+            children = self.children(state)
         
-        #initialize values with one of the children if possible -- let's say the first kid
-        first_kiddo, first_reward, terminal = env.step(action=[children_actions[0], 0])[0:3]
+            #initialize values with one of kids - e.g. first
+            first_kiddo = children[0]
 
-        if self.tree.get(first_kiddo) == None:
-            print("HELLO")
-            return state, self.tree.get(state).reward
+            #if child is not in the tree yet...
+            if self.tree.get(first_kiddo.state) == None:
+                return state, self.tree.get(state).reward
+            
+            #otherwise, continue initialization
+            selected = first_kiddo
+            selected_reward = first_kiddo.reward
+            
+            selected_uct = first_kiddo.wins/first_kiddo.visits + alpha*(np.sqrt((np.log(first_kiddo.parent.visits))/first_kiddo.visits))
+
+            #now compare to the rest of the children
+            for child in children[1:]:
+                
+                #if we've got a kid not in the tree...
+                if self.tree.get(child.state) == None:
+                    return state, self.tree.get(state).reward
+                
+                #if the child is is in tree...compare uct values to find the best kiddo and then loop again
+                else:
+                    uct_val = (child.wins)/(child.visits) + alpha*(np.sqrt((np.log(child.parent.visits))/child.visits))
+                    if uct_val > selected_uct:
+                        selected_uct = uct_val
+                        selected = child
+            
+            #update values for the next iteration
+            state = selected.state
         
-        selected = first_kiddo
-        selected_reward = first_reward
-
-        wins = self.tree.get(first_kiddo).wins
-        visits = self.tree.get(first_kiddo).visits
-        parent = self.tree.get(first_kiddo).parent
-        parent_visits = parent.visits
-        selected_uct = wins/visits + alpha*(np.sqrt((np.log(parent_visits))/visits))
-        
-
-        #continue with the rest of the algo -- picking best kids
-        #calculate each child's UCT value 
-        while self.tree.get(state).terminal != True:
-            for child_action1 in children_actions:
-                for child_action2 in children_actions:
-                    
-                    child_state, child_reward, terminal = env.step(action=[child_action1, child_action2])[:3]
-                    print("THIS IS MY CHILD STATE")
-                    print(child_state)
-
-                    # if child_state.all() == state.all():
-                    #     continue
-
-                    #if child not in state...
-                    if self.tree.get(child_state) == None: 
-                        print("WHYYYY")
-                        return state, self.tree.get(state).reward
-                    else:
-                        #calc UCT value
-                        wins = self.tree.get(child_state).wins
-                        visits = self.tree.get(child_state).visits
-                        parent = self.tree.get(child_state).parent
-                        parent_visits = parent.visits
-                        uct = wins/visits + alpha*(np.sqrt((np.log(parent_visits))/visits))
-
-                        if uct >= selected_uct:
-                            selected_uct = uct
-                            selected = child_state
-                            selected_reward = child_reward
-                            selected_terminal = terminal
-                            
-            #update the values for the next iteration
-            state = selected
-            state_reward = selected_reward
-            terminal = selected_terminal
-
-        #if state is terminal, just return the state
-        return state, self.tree.get(state).reward
+        return state
 
     def expansion(self, state, done):
         '''
         expand/add to the tree a child node from the selected node
         '''
-
-        if done:
+        #if the state is terminal, there is nothing to expand. just return state
+        if self.tree.get(state).reward > 0:
             return state
+        
+        #otherwise...
         else:
-            env.reset()
-            children_actions = [0, 1, 2, 3, 4, 5]
-            for child_action1 in children_actions:
-                for child_action2 in children_actions:
-                    child_state, reward, done, blah = env.step(action=[child_action1, child_action2])
+            children = self.children(state)
 
-                    if self.tree.get(child_state) == None:
-                        print("FIRST")
+            for child in children:
 
-                        new_node = Node(child_state, self.tree.get(state), False, [child_action1, child_action2], 0, 0, reward, done)
-                        self.tree.add(new_node)
-                        print(self.tree.get(child_state).state)
-                        print(child_action1, child_action2)
-                        print("======")
+                if self.tree.get(child.state) == None:
+                    self.tree.add(child)
 
-                        return new_node.state
-                    else:
-                        print("SECOND")
+                    return child.state
 
-        return state 
+        #if all the children are already in the tree (though that shouldn't happen)...
+        return state   
     
-    def rollout(self, state, done, init_reward):
+    
+    def rollout(self, state):
         '''
         implement random rollout policy frm expanded node and return reward from policy
         '''
+        reward = 0
+        done = False
 
-        while not done:
+        #while we are not in a terminal state and the gameplay session has not yet maxed out all turns...
+        while reward <= 0 and not done:
+            
+            #get kiddos
+            children = self.children(state)
+
+            #sample a random action
             action = np.array([self.env.action_space.sample() for _ in range(2)])  
+
+            #update the state 
             next_state, reward, done, info = self.env.step(action=action)
             state = next_state
-            # print(done)
-            # print(reward)
-
-        # print(self.tree.get(state))
         
         return reward
 
 
-    def backprop(self, state):
-
+    def backprop(self, state, reward):
         '''
         Takes in the terminal state and updates the wins and visits for the entire tree path
         '''
-
         current = self.tree.get(state)
 
         while current != None:
 
             #increment wins
-            if current.reward > 0:
+            if reward > 0:
                 current.wins += 1
 
             #increment the visits
@@ -259,20 +234,58 @@ class MCTS():
 
             #update current
             current = current.parent
+    
+    def children(self, state):
+        '''
+        given a state, returns all its children states and their associated actions as nodes
+        '''
+        shadow_env = OverCookedEnv(scenario='asymmetric_advantages')
 
-            # print(type(current))
+        #first get the path in question
+        
+        if self.tree.get(state) == None or self.tree.get(state).action_path == None:
+            return []
+        
+        path = self.tree.get(state).action_path
+        path = path[1:]
+
+        #children actions
+        child_actions = [0, 1, 2, 3, 4, 5]
+        children = []
+
+        #append in the children of that state
+        for action1 in child_actions:
+            for action2 in child_actions:
+                
+                joint_action = [action1, action2]
+                child_state, reward, done, info = shadow_env.step(action=joint_action)
+                child_path = path
+                child = Node(child_state, self.tree.get(state), child_path.append(joint_action), joint_action, 0, 0, reward)
+                children.append(child)
+
+                print("HEY THIS IS THE PATH")
+                print(path)
+
+
+                shadow_env.reset()
+                for action in path:
+                    print("HEY THIS IS MY ACTION")
+                    print(action)
+                    shadow_env.step(action=action)
+
+        shadow_env.reset()
+
+        return children
 
 @dataclass
 class Node:
     state: npt.ArrayLike
     parent: "Node"
-    root: bool 
+    action_path: list[list[int]]
     action_from_parent: list[int]
     wins: int
     visits: int
     reward: int
-    terminal: bool
-
 
 class Tree:
     def __init__(self, root: "Node"):
@@ -286,4 +299,6 @@ class Tree:
         if flat_state not in self.nodes:
             return None
         return self.nodes[flat_state]    
+    
+    
 

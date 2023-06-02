@@ -18,7 +18,7 @@ env = OverCookedEnv(scenario="asymmetric_advantages")
 env.reset()
 
 
-# Random agent gameplay ---------------------------------------
+# Random agent gameplay ---------------------------------------UNCOMMENT THE SECTION BELOW TO RUN THE AGENTS
 
 # for _ in range(200):
 
@@ -35,7 +35,7 @@ env.reset()
 #     cv2.imshow('Image', image)
 #     key = cv2.waitKey(100)
 
-# MCTS agent gameplay -------------------------------------------
+# MCTS agent gameplay -------------------------------------------UNCOMMENT THE SECTION BELOW TO RUN THE AGENTS
 
 # next_state, reward, done, info = env.step(action=[1, 1])
 # print(next_state)

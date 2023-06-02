@@ -65,7 +65,6 @@ class MCTS():
         self.initial = self.env.reset()
         self.tree = Tree(Node(self.initial, None, [[-1,-1]], [-1,-1], 0, 1, 0))
 
-
     def iterate(self, n):
         '''
         Perform MCTS n times to develop the visit frequencies that will be later used by path function
@@ -77,9 +76,6 @@ class MCTS():
 
             if reward <= 0:
                 expanded = self.expansion(state, False)
-                print("THIS IS MY EXPANDED STATE")
-                print(expanded)
-                print(self.tree.get(expanded).action_path)
                 reward = self.rollout(expanded)
                 self.backprop(expanded, reward)
 
@@ -103,11 +99,9 @@ class MCTS():
         reward = 0
         current = self.initial
         mcts_path = []
-        current_changed = False
         
         while done <= 200 and reward <= 0:
             
-            #traverse through the layers of the tree 
             children = self.children(current)
             for child in children:
                 child = self.tree.get(child.state)
@@ -117,15 +111,10 @@ class MCTS():
                     mcts_path.append(child.action_from_parent)
                     return mcts_path
                 if child.visits > most_visits:
-                    current_changed = True
                     most_visits = child.visits
                     current = child.state
             mcts_path.append(self.tree.get(current).action_from_parent)
             done += 1
-            if not current_changed:
-                break
-            else:
-                current_changed = False
 
         return mcts_path 
 
@@ -133,7 +122,6 @@ class MCTS():
         '''
         selects a node in the tree that has not been expanded yet
         '''
-        # traverse the tree by picking best kids by UCT val
         while self.tree.get(state) != None:
             
             #get the children
@@ -165,11 +153,12 @@ class MCTS():
                     if uct_val > selected_uct:
                         selected_uct = uct_val
                         selected = child
+                        selected_reward = child.reward
             
             #update values for the next iteration
             state = selected.state
         
-        return state
+        return state, self.tree.get(state).reward
 
     def expansion(self, state, done):
         '''
@@ -186,8 +175,7 @@ class MCTS():
             for child in children:
 
                 if self.tree.get(child.state) == None:
-                    self.tree.add(child)
-
+                    self.tree.add(Node(child.state, child.parent, child.action_path, child.action_from_parent, child.wins, child.visits, child.reward ))
                     return child.state
 
         #if all the children are already in the tree (though that shouldn't happen)...
@@ -205,7 +193,7 @@ class MCTS():
         while reward <= 0 and not done:
             
             #get kiddos
-            children = self.children(state)
+            # children = self.children(state)
 
             #sample a random action
             action = np.array([self.env.action_space.sample() for _ in range(2)])  
@@ -213,6 +201,8 @@ class MCTS():
             #update the state 
             next_state, reward, done, info = self.env.step(action=action)
             state = next_state
+
+            # done += 1
         
         return reward
 
@@ -239,15 +229,19 @@ class MCTS():
         '''
         given a state, returns all its children states and their associated actions as nodes
         '''
+
+        #create shadow environment to simulate movement through the tree 
         shadow_env = OverCookedEnv(scenario='asymmetric_advantages')
 
-        #first get the path in question
+        current = self.tree.get(state)
+        path = []
         
-        if self.tree.get(state) == None or self.tree.get(state).action_path == None:
-            return []
-        
-        path = self.tree.get(state).action_path
-        path = path[1:]
+        #get the action path for the state by traversing back to root
+        while current != None:
+            path.append(current.action_from_parent)
+            current = current.parent
+
+        path.reverse()
 
         #children actions
         child_actions = [0, 1, 2, 3, 4, 5]
@@ -257,21 +251,17 @@ class MCTS():
         for action1 in child_actions:
             for action2 in child_actions:
                 
-                joint_action = [action1, action2]
-                child_state, reward, done, info = shadow_env.step(action=joint_action)
-                child_path = path
-                child = Node(child_state, self.tree.get(state), child_path.append(joint_action), joint_action, 0, 0, reward)
-                children.append(child)
-
-                print("HEY THIS IS THE PATH")
-                print(path)
-
-
+                #get to the state first from init
                 shadow_env.reset()
                 for action in path:
-                    print("HEY THIS IS MY ACTION")
-                    print(action)
                     shadow_env.step(action=action)
+                
+                #from the state, then take the action corresponding to child 
+                joint_action = [action1, action2]
+                child_state, reward, done, info = shadow_env.step(action=joint_action)
+
+                child = Node(child_state, self.tree.get(state), path + [joint_action], joint_action, 0, 1, reward)
+                children.append(child)
 
         shadow_env.reset()
 
@@ -286,6 +276,7 @@ class Node:
     wins: int
     visits: int
     reward: int
+
 
 class Tree:
     def __init__(self, root: "Node"):

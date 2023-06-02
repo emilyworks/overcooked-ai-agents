@@ -1,6 +1,6 @@
 # overcooked-ai
 
-This repository aims to support experiemnts on AI-AI cooperation and is adapted from In-Chang's [overcooked-ai](https://github.com/bic4907/Overcooked-AI). It builds on the work in overcooked-ai by adding AI agent pairs that follow different gameplay policies. 
+This repository aims to support experiments on AI-AI cooperation and is adapted from In-Chang's [overcooked-ai](https://github.com/bic4907/Overcooked-AI). It builds on the work in overcooked-ai by adding AI agent pairs that follow different gameplay policies. 
 
 **Getting Started**
 

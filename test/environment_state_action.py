@@ -20,39 +20,39 @@ env.reset()
 
 # Random agent gameplay ---------------------------------------UNCOMMENT THE SECTION BELOW TO RUN THE AGENTS
 
-# for _ in range(200):
+for _ in range(200):
 
-#     #call the class and its methods
-#     agent = Random(env)
-#     agent_ac1 = agent.action1()
-#     agent_ac2 = agent.action2()
-    
-#     #feed actions into the environment
-#     next_state, reward, done, info = env.step(action=[agent_ac1, agent_ac2])
-    
-#     #visualize the environment
-#     image = env.render()
-#     cv2.imshow('Image', image)
-#     key = cv2.waitKey(100)
+    #call the class and its methods
+    agent = Random(env)
+    agent_ac1 = agent.action1()
+    agent_ac2 = agent.action2()
+
+    #feed actions into the environment
+    next_state, reward, done, info = env.step(action=[agent_ac1, agent_ac2])
+
+    #visualize the environment
+    image = env.render()
+    cv2.imshow('Image', image)
+    key = cv2.waitKey(100)
 
 # MCTS agent gameplay -------------------------------------------UNCOMMENT THE SECTION BELOW TO RUN THE AGENTS
 
-# next_state, reward, done, info = env.step(action=[1, 1])
-# print(next_state)
+next_state, reward, done, info = env.step(action=[1, 1])
+print(next_state)
 
-# env.reset()
+env.reset()
 
-# next_state, reward, done, info = env.step(action=[1, 1])
-# print(next_state)
+next_state, reward, done, info = env.step(action=[1, 1])
+print(next_state)
 
-# env.reset()
+env.reset()
 
-# next_state, reward, done, info = env.step(action=[1, 1])
-# print(next_state)
-# print(info)
+next_state, reward, done, info = env.step(action=[1, 1])
+print(next_state)
+print(info)
 
-# env = env.reset()
-
+env = env.reset()
+###
 agent = MCTS()
 agent_action = agent.iterate(1)
 agent_path = agent.path()

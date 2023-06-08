@@ -1,14 +1,14 @@
 # overcooked-ai
 
-This repository aims to support experiments on AI-AI cooperation and is adapted from In-Chang's [overcooked-ai](https://github.com/bic4907/Overcooked-AI). It builds on the work in overcooked-ai by adding AI agent pairs that follow different gameplay policies. 
+This repository aims to support experiments on AI-AI cooperation and is adapted from In-Chang's [overcooked-ai](https://github.com/bic4907/Overcooked-AI). It builds on the work in overcooked-ai by adding AI agent pairs that follow different gameplay policies.
 
 **Getting Started**
 
-1. The code for various AI agents can be found in test/agents.py . 
+1. The code for various AI agents can be found in test/agents.py .
 
 2. Start ipython and run test/environment_state_action.py to run visualizations of agents working in their Overcooked environment.
 
-For specifics on existing agent code and how to run the code, please refer to in-file comments. 
+For specifics on existing agent code and how to run the code, please refer to in-file comments.
 
 **References**
 
@@ -21,5 +21,3 @@ Paper: [On the Importance of Environments in Human-Robot Coordination](https://a
 Github Repo: [overcooked-ai](https://github.com/HumanCompatibleAI/overcooked_ai)
 
 Github Repo: [overcooked-ai](https://github.com/bic4907/Overcooked-AI)
-
-

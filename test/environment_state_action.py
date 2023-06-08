@@ -18,6 +18,8 @@ env = OverCookedEnv(scenario="asymmetric_advantages")
 env.reset()
 
 
+# INSTRUCTIONS FOR BELOW: "uncomment" one agent at a time 
+
 # Random agent gameplay ---------------------------------------UNCOMMENT THE SECTION BELOW TO RUN THE AGENTS
 
 # for _ in range(200):
@@ -37,68 +39,27 @@ env.reset()
 
 # MCTS agent gameplay -------------------------------------------UNCOMMENT THE SECTION BELOW TO RUN THE AGENTS
 
-# next_state, reward, done, info = env.step(action=[1, 1])
-# print(next_state)
+# agent = MCTS()
+# agent_action = agent.iterate(1)
+# agent_path = agent.path()
 
-# env.reset()
+# print(agent_path)
 
-# next_state, reward, done, info = env.step(action=[1, 1])
-# print(next_state)
-
-# env.reset()
-
-# next_state, reward, done, info = env.step(action=[1, 1])
-# print(next_state)
-# print(info)
-
-# env = env.reset()
-
-agent = MCTS()
-agent_action = agent.iterate(1)
-agent_path = agent.path()
-
-print(agent_path)
-
-for action in agent_path:
-    next_state, reward, done, info = env.step(action=action)
-    image = env.render()
-    cv2.imshow('Image', image)
-    key = cv2.waitKey(100)
+# for action in agent_path:
+#     next_state, reward, done, info = env.step(action=action)
+#     image = env.render()
+#     cv2.imshow('Image', image)
+#     key = cv2.waitKey(100)
 
 
+# ARCHIVED MATERIAL (DEPRECATED) -----------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#     # get the possibe list of actions
-#     action = np.array([env.action_space.sample() for _ in range(2)])
-#     # print(path)
-#     # action[0] = action
-#     action[1] = 4
-#     # input_action = 4
+    #     # get the possibe list of actions
+    #     action = np.array([env.action_space.sample() for _ in range(2)])
+    #     # print(path)
+    #     # action[0] = action
+    #     action[1] = 4
+    #     # input_action = 4
     # '''(Old) Random Agent-------------------------------------------------------------------------------------'''
     #keep track of the rewards
     # sum_rewards += reward

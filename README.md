@@ -4,9 +4,11 @@ This repository aims to support experiments on AI-AI cooperation and is adapted 
 
 **Getting Started**
 
-1. The code for various AI agents can be found in test/agents.py . 
+1. Install dependencies by typing "pip3 install -r requirements2.txt" (make sure you are in the root folder when you do this, otherwise the path may need to be modified)
+ 
+2. The code for various AI agents can be found in test/agents.py . 
 
-2. Start ipython and run test/environment_state_action.py to run visualizations of agents working in their Overcooked environment.
+3. Start ipython and run test/environment_state_action.py to run visualizations of agents working in their Overcooked environment.
 
 For specifics on existing agent code and how to run the code, please refer to in-file comments. 
 

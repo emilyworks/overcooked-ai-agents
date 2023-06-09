@@ -8,7 +8,7 @@ This repository aims to support experiments on AI-AI cooperation and is adapted 
  
 2. The code for various AI agents can be found in test/agents.py . 
 
-3. Start ipython and run test/environment_state_action.py to run visualizations of agents working in their Overcooked environment.
+3. Start ipython and type "run test/environment_state_action.py" to run visualizations of agents working in their Overcooked environment.
 
 For specifics on existing agent code and how to run the code, please refer to in-file comments. 
 

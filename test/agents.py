@@ -100,7 +100,7 @@ class MCTS():
         current = self.initial
         mcts_path = []
         
-        while done <= 200 and reward <= 0:
+        while done <= 5 and reward <= 0:
             
             children = self.children(current)
             for child in children:

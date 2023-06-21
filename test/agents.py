@@ -71,9 +71,7 @@ class MCTS():
         '''        
 
         for _ in range(n):
-
             state, reward = self.selection(self.initial)
-
             if reward <= 0:
                 expanded = self.expansion(state, False)
                 reward = self.rollout(expanded)
@@ -100,8 +98,7 @@ class MCTS():
         current = self.initial
         mcts_path = []
         
-        while done <= 200 and reward <= 0:
-            
+        while done <= 5 and reward <= 0:
             children = self.children(current)
             for child in children:
                 child = self.tree.get(child.state)
@@ -123,7 +120,6 @@ class MCTS():
         selects a node in the tree that has not been expanded yet
         '''
         while self.tree.get(state) != None:
-            
             #get the children
             children = self.children(state)
         
@@ -173,7 +169,6 @@ class MCTS():
             children = self.children(state)
 
             for child in children:
-
                 if self.tree.get(child.state) == None:
                     self.tree.add(Node(child.state, child.parent, child.action_path, child.action_from_parent, child.wins, child.visits, child.reward ))
                     return child.state
@@ -191,7 +186,6 @@ class MCTS():
 
         #while we are not in a terminal state and the gameplay session has not yet maxed out all turns...
         while reward <= 0 and not done:
-            
             #get kiddos
             # children = self.children(state)
 
